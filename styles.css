@@ -57,6 +57,14 @@ tr:nth-child(even) td {
     background: #f8faff;
 }
 
+/* Cores para células alteradas nas regras */
+td[style*="background: #fff6bf;"] {
+    background: #fff6bf !important; /* amarelo */
+}
+td[style*="background: #ffeaea;"] {
+    background: #ffeaea !important; /* vermelho claro */
+}
+
 @media (max-width: 900px) {
     #tables-container {
         flex-direction: column;
