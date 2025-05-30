@@ -23,7 +23,7 @@ const FIELDS = [
     { label: "Prob. Precipitação (%)", key: "precipitation_probability", unit: "%" },
     { label: "Precipitação (mm)", key: "precipitation", unit: "mm" },
     { label: "Pancadas (mm)", key: "showers", unit: "mm" },
-    { label: "Weather Code", key: "weather_code", unit: "" },
+    { label: "Tempo", key: "weather_code", unit: "" }, // Alterado para "Tempo"
     { label: "Nuvens (%)", key: "cloud_cover", unit: "%" },
     { label: "Nuvens Baixas (%)", key: "cloud_cover_low", unit: "%" },
     { label: "Vento 80m (km/h)", key: "wind_speed_80m", unit: "km/h" },
@@ -34,6 +34,29 @@ const BASE_URL = "https://api.open-meteo.com/v1/forecast";
 const PARAMS =
     "hourly=visibility,apparent_temperature,precipitation_probability,precipitation,showers,weather_code,cloud_cover,cloud_cover_low,wind_speed_80m,wind_direction_80m" +
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
+
+const WEATHER_CODE_PT = {
+    "0": "Desenvolvimento de nuvens não observado ou não observável",
+    "1": "Nuvens geralmente dissipando ou se tornando menos desenvolvidas",
+    "2": "Estado do céu no geral inalterado",
+    "3": "Nuvens geralmente se formando ou desenvolvendo",
+    "4": "Visibilidade reduzida por fumaça (incêndios, fumaça industrial ou cinzas vulcânicas)",
+    "5": "Neblina seca (haze)",
+    "6": "Poeira suspensa em grande escala, não levantada pelo vento na estação",
+    "7": "Poeira ou areia levantada pelo vento na estação, mas sem turbilhão ou tempestade desenvolvida",
+    "8": "Turbilhão de poeira/areia bem desenvolvido observado, mas sem tempestade de poeira/areia",
+    "9": "Tempestade de poeira ou areia à vista ou ocorrida na última hora",
+    "10": "Névoa",
+    "11": "Pedaços/fragmentos",
+    "12": "Mais ou menos contínuo",
+    "13": "Relâmpago visível, sem trovão ouvido",
+    "14": "Precipitação à vista, não atingindo o solo/mar",
+    "15": "Precipitação à vista, atingindo solo/mar, mas distante (>5km)",
+    "16": "Precipitação à vista, atingindo solo/mar, próxima mas não na estação",
+    "17": "Trovoada sem precipitação no momento",
+    "18": "Rajadas (squalls)",
+    "19": "CB (Cumulonimbus)"
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("tables-container");
@@ -71,22 +94,71 @@ function makeTableSection(data, locationName) {
     // Linhas
     const tbody = document.createElement("tbody");
     const times = data.hourly.time;
+    const now = getNowLocalString();
+
     for (let i = 0; i < times.length; i++) {
+        const currTime = times[i].replace("T", " ");
+        // Só mostra linhas onde Hora >= hora atual
+        if (currTime < now) continue;
+
         const row = document.createElement("tr");
-        row.innerHTML = FIELDS.map(f => {
-            let value;
+        row.innerHTML = FIELDS.map((f, idx) => {
+            let value, style = "";
+
             if (f.key === "time") {
-                value = times[i].replace("T", " ");
+                value = currTime;
+            } else if (f.key === "weather_code") {
+                // Convert to texto em português
+                let code = data.hourly["weather_code"][i];
+                value = WEATHER_CODE_PT.hasOwnProperty(code)
+                    ? WEATHER_CODE_PT[code]
+                    : code;
             } else if (Array.isArray(data.hourly[f.key])) {
                 value = data.hourly[f.key][i];
             } else {
                 value = "-";
             }
-            return `<td>${value !== undefined && value !== null ? value + (f.unit ? " " + f.unit : "") : "-"}</td>`;
+
+            // Regras de cor de fundo
+            if (f.key === "visibility" && isNumeric(value)) {
+                if (value > 399 && value < 801) style = 'background: #fff6bf;';
+                else if (value < 400) style = 'background: #ffeaea;';
+            } else if (f.key === "precipitation" && isNumeric(value)) {
+                if (value > 1 && value < 10) style = 'background: #fff6bf;';
+                else if (value > 9) style = 'background: #ffeaea;';
+            } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
+                if (value > 49 && value < 80) style = 'background: #fff6bf;';
+                else if (value > 79) style = 'background: #ffeaea;';
+            } else if (f.key === "wind_speed_80m" && isNumeric(value)) {
+                if (value > 19 && value < 30) style = 'background: #fff6bf;';
+                else if (value > 29) style = 'background: #ffeaea;';
+            }
+
+            // Unidades
+            let unidade = (value !== "-" && f.unit) ? ` ${f.unit}` : "";
+
+            return `<td${style ? ` style="${style}"` : ""}>${value !== undefined && value !== null ? value + unidade : "-"}</td>`;
         }).join("");
         tbody.appendChild(row);
     }
     table.appendChild(tbody);
     section.appendChild(table);
     return section;
+}
+
+// Obter hora local (America/Sao_Paulo) no mesmo formato das datas da API: 'YYYY-MM-DD HH:MM'
+function getNowLocalString() {
+    const now = new Date();
+    // Ajusta para o fuso de São Paulo (-3 UTC, sem considerar DST)
+    let spNow = new Date(now.getTime() - (now.getTimezoneOffset() + 180) * 60000);
+    const yyyy = spNow.getFullYear();
+    const mm = String(spNow.getMonth() + 1).padStart(2, '0');
+    const dd = String(spNow.getDate()).padStart(2, '0');
+    const hh = String(spNow.getHours()).padStart(2, '0');
+    const min = String(spNow.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
+
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
