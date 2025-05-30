@@ -36,10 +36,10 @@ const PARAMS =
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
 const WEATHER_CODE_PT = {
-    "0": "Desenvolvimento de nuvens não observado ou não observável",
-    "1": "Nuvens geralmente dissipando ou se tornando menos desenvolvidas",
-    "2": "Estado do céu no geral inalterado",
-    "3": "Nuvens geralmente se formando ou desenvolvendo",
+    "0": "Desenvolvimento de nuvens não observado",
+    "1": "Nuvens dissipando",
+    "2": "Estado do céu inalterado",
+    "3": "Nuvens se formando",
     "4": "Visibilidade reduzida por fumaça (incêndios, fumaça industrial ou cinzas vulcânicas)",
     "5": "Neblina seca (haze)",
     "6": "Poeira suspensa em grande escala, não levantada pelo vento na estação",
