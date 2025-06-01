@@ -16,7 +16,7 @@ const LOCATIONS = [
     }
 ];
 
-// Nova ordem e retirando "Visibilidade (m)"
+// Nova ordem, sem “Visibilidade (m)”
 const FIELDS = [
     { label: "Hora", key: "time", unit: "" },
     { label: "Tempo", key: "weather_code", unit: "" },
@@ -35,7 +35,8 @@ const PARAMS =
     "hourly=visibility,apparent_temperature,precipitation_probability,precipitation,showers,weather_code,cloud_cover,cloud_cover_low,wind_speed_80m,wind_direction_80m" +
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
-// Adicionando TODOS códigos novos conforme solicitado (descrições em português)
+// WEATHER_CODE_PT completo omitido aqui para brevidade, mas use a versão da resposta anterior
+
 const WEATHER_CODE_PT = {
     "0": "Tempo bom",
     "1": "Nuvens dissipando",
@@ -177,11 +178,16 @@ function makeTableSection(data, locationName) {
     const times = data.hourly.time;
     const now = getNowLocalString();
 
-    // Só mostra linhas onde Hora >= hora atual (nunca mostrar linhas para trás)
-    for (let i = 0; i < times.length; i++) {
-        const currTime = times[i].replace("T", " ");
-        if (currTime < now) continue;
+    // ENCONTRAR O PRIMEIRO ÍNDICE >= agora
+    let firstIdx = times.findIndex(t => t.replace("T", " ") >= now);
+    if (firstIdx === -1) firstIdx = times.length; // Se não achar, não mostra linhas
 
+    // Mostrar SOMENTE as próximas 5 linhas (horas) a partir da hora atual
+    for (let rowIdx = 0; rowIdx < 5; rowIdx++) {
+        let i = firstIdx + rowIdx;
+        if (i >= times.length) break;
+
+        const currTime = times[i].replace("T", " ");
         const row = document.createElement("tr");
         row.innerHTML = FIELDS.map((f) => {
             let value, style = "";
@@ -193,22 +199,29 @@ function makeTableSection(data, locationName) {
                 value = WEATHER_CODE_PT.hasOwnProperty(code)
                     ? WEATHER_CODE_PT[code]
                     : code;
+
+                // Fundo vermelho se código NÃO for 0, 1 ou 2
+                if (!(code === 0 || code === 1 || code === 2 || code === "0" || code === "1" || code === "2")) {
+                    style = 'background: #ffc1c1;'; // vermelho claro
+                }
             } else if (Array.isArray(data.hourly[f.key])) {
                 value = data.hourly[f.key][i];
             } else {
                 value = "-";
             }
 
-            // Regras de cor de fundo
-            if (f.key === "precipitation" && isNumeric(value)) {
-                if (value > 1 && value < 10) style = 'background: #fff6bf;';
-                else if (value > 9) style = 'background: #ffeaea;';
-            } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
-                if (value > 49 && value < 80) style = 'background: #fff6bf;';
-                else if (value > 79) style = 'background: #ffeaea;';
-            } else if (f.key === "wind_speed_80m" && isNumeric(value)) {
-                if (value > 19 && value < 30) style = 'background: #fff6bf;';
-                else if (value > 29) style = 'background: #ffeaea;';
+            // Outras regras de cor de fundo (menos para weather_code)
+            if (f.key !== "weather_code") {
+                if (f.key === "precipitation" && isNumeric(value)) {
+                    if (value > 1 && value < 10) style = 'background: #fff6bf;';
+                    else if (value > 9) style = 'background: #ffeaea;';
+                } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
+                    if (value > 49 && value < 80) style = 'background: #fff6bf;';
+                    else if (value > 79) style = 'background: #ffeaea;';
+                } else if (f.key === "wind_speed_80m" && isNumeric(value)) {
+                    if (value > 19 && value < 30) style = 'background: #fff6bf;';
+                    else if (value > 29) style = 'background: #ffeaea;';
+                }
             }
 
             // Unidades
@@ -223,10 +236,9 @@ function makeTableSection(data, locationName) {
     return section;
 }
 
-// Obter hora local (America/Sao_Paulo) no mesmo formato das datas da API: 'YYYY-MM-DD HH:MM'
+// Obter hora local (America/Sao_Paulo) no formato 'YYYY-MM-DD HH:MM'
 function getNowLocalString() {
     const now = new Date();
-    // Ajusta para o fuso de São Paulo (-3 UTC, sem considerar DST)
     let spNow = new Date(now.getTime() - (now.getTimezoneOffset() + 180) * 60000);
     const yyyy = spNow.getFullYear();
     const mm = String(spNow.getMonth() + 1).padStart(2, '0');
