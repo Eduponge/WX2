@@ -38,7 +38,7 @@ const PARAMS =
 const WEATHER_CODE_PT = {
     "0": "Tempo bom",
     "1": "Nuvens dissipando",
-    "2": "Tempo inalterado",
+    "2": "Tempo bom",
     "3": "Nuvens se formando",
     "4": "Visibilidade reduzida por fumaça (incêndios, fumaça industrial ou cinzas vulcânicas)",
     "5": "Neblina seca (haze)",
