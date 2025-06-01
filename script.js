@@ -86,12 +86,12 @@ const WEATHER_CODE_PT = {
     "47": "Nevoeiro, céu invisível",
     "48": "Nevoeiro, céu visível",
     "49": "Nevoeiro, céu invisível",
-    "50": "Chuvisco, não congelante, intermitente",
-    "51": "Chuvisco, não congelante, contínuo",
-    "52": "Chuvisco, não congelante, intermitente",
-    "53": "Chuvisco, não congelante, contínuo",
-    "54": "Chuvisco, não congelante, intermitente",
-    "55": "Chuvisco, não congelante, contínuo",
+    "50": "Chuvisco intermitente",
+    "51": "Chuvisco contínuo",
+    "52": "Chuvisco intermitente",
+    "53": "Chuvisco contínuo",
+    "54": "Chuvisco intermitente",
+    "55": "Chuvisco contínuo",
     "56": "Chuvisco, congelante, fraco",
     "57": "Chuvisco, congelante, moderado ou forte (denso)",
     "58": "Chuvisco e chuva, fraco",
@@ -180,8 +180,8 @@ function makeTableSection(data, locationName) {
     let firstIdx = times.findIndex(t => t.replace("T", " ") >= now);
     if (firstIdx === -1) firstIdx = times.length; // Se não achar, não mostra linhas
 
-    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 4 em diante)
-    for (let i = firstIdx + 4; i < times.length; i++) {
+    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 5 em diante)
+    for (let i = firstIdx + 5; i < times.length; i++) {
         const currTime = times[i].replace("T", " ");
         const row = document.createElement("tr");
         row.innerHTML = FIELDS.map((f) => {
