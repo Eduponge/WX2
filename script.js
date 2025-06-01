@@ -16,7 +16,6 @@ const LOCATIONS = [
     }
 ];
 
-// Nova ordem, sem “Visibilidade (m)”
 const FIELDS = [
     { label: "Hora", key: "time", unit: "" },
     { label: "Tempo", key: "weather_code", unit: "" },
@@ -35,10 +34,11 @@ const PARAMS =
     "hourly=visibility,apparent_temperature,precipitation_probability,precipitation,showers,weather_code,cloud_cover,cloud_cover_low,wind_speed_80m,wind_direction_80m" +
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
+// (Lista completa conforme resposta anterior)
 const WEATHER_CODE_PT = {
     "0": "Tempo bom",
     "1": "Nuvens dissipando",
-    "2": "Tempo bom",
+    "2": "Tempo inalterado",
     "3": "Nuvens se formando",
     "4": "Visibilidade reduzida por fumaça (incêndios, fumaça industrial ou cinzas vulcânicas)",
     "5": "Neblina seca (haze)",
@@ -76,31 +76,31 @@ const WEATHER_CODE_PT = {
     "37": "Neve soprada forte",
     "38": "Neve soprada leve ou moderada",
     "39": "Neve soprada forte",
-    "40": "Nevoeiro à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
-    "41": "Nevoeiro em manchas",
-    "42": "Nevoeiro, céu visível",
-    "43": "Nevoeiro, céu invisível",
-    "44": "Nevoeiro, céu visível",
-    "45": "Nevoeiro, céu invisível",
-    "46": "Nevoeiro, céu visível",
-    "47": "Nevoeiro, céu invisível",
+    "40": "Nevoeiro ou nevoeiro de gelo à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
+    "41": "Nevoeiro ou nevoeiro de gelo em manchas",
+    "42": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "43": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "44": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "45": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "46": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "47": "Nevoeiro ou nevoeiro de gelo, céu invisível",
     "48": "Nevoeiro, depositando escarcha, céu visível",
     "49": "Nevoeiro, depositando escarcha, céu invisível",
-    "50": "Chuvisco intermitente",
-    "51": "Chuvisco contínuo",
-    "52": "Chuvisco intermitente",
-    "53": "Chuvisco contínuo",
-    "54": "Chuvisco intermitente",
-    "55": "Chuvisco contínuo",
+    "50": "Chuvisco, não congelante, intermitente",
+    "51": "Chuvisco, não congelante, contínuo",
+    "52": "Chuvisco, não congelante, intermitente",
+    "53": "Chuvisco, não congelante, contínuo",
+    "54": "Chuvisco, não congelante, intermitente",
+    "55": "Chuvisco, não congelante, contínuo",
     "56": "Chuvisco, congelante, fraco",
     "57": "Chuvisco, congelante, moderado ou forte (denso)",
-    "58": "Chuvisco e chuva, fraca",
+    "58": "Chuvisco e chuva, fraco",
     "59": "Chuvisco e chuva, moderado ou forte",
-    "60": "Chuva intermitente",
-    "61": "Chuva contínua",
-    "62": "Chuva intermitente",
-    "63": "Chuva contínua",
-    "64": "Chuva intermitente",
+    "60": "Chuva, não congelante, intermitente",
+    "61": "Chuva, não congelante, contínua",
+    "62": "Chuva, não congelante, intermitente",
+    "63": "Chuva, não congelante, contínua",
+    "64": "Chuva, não congelante, intermitente",
     "65": "Chuva, não congelante, contínua",
     "66": "Chuva, congelante, fraca",
     "67": "Chuva, congelante, moderada ou forte (densa)",
@@ -180,8 +180,8 @@ function makeTableSection(data, locationName) {
     let firstIdx = times.findIndex(t => t.replace("T", " ") >= now);
     if (firstIdx === -1) firstIdx = times.length; // Se não achar, não mostra linhas
 
-    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 5 em diante)
-    for (let i = firstIdx + 5; i < times.length; i++) {
+    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 4 em diante)
+    for (let i = firstIdx + 4; i < times.length; i++) {
         const currTime = times[i].replace("T", " ");
         const row = document.createElement("tr");
         row.innerHTML = FIELDS.map((f) => {
@@ -195,8 +195,11 @@ function makeTableSection(data, locationName) {
                     ? WEATHER_CODE_PT[code]
                     : code;
 
-                // Fundo vermelho se código NÃO for 0, 1 ou 2
-                if (!(code === 0 || code === 1 || code === 2 || code === "0" || code === "1" || code === "2")) {
+                // Fundo de acordo com código:
+                // 0, 1, 2: normal; 3: amarelo; outros: vermelho
+                if (code === 3 || code === "3") {
+                    style = 'background: #fff6bf;'; // amarelo
+                } else if (!(code === 0 || code === 1 || code === 2 || code === "0" || code === "1" || code === "2")) {
                     style = 'background: #ffc1c1;'; // vermelho claro
                 }
             } else if (Array.isArray(data.hourly[f.key])) {
