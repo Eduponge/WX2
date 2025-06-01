@@ -16,16 +16,16 @@ const LOCATIONS = [
     }
 ];
 
+// Nova ordem e retirando "Visibilidade (m)"
 const FIELDS = [
     { label: "Hora", key: "time", unit: "" },
-    { label: "Visibilidade (m)", key: "visibility", unit: "m" },
+    { label: "Tempo", key: "weather_code", unit: "" },
+    { label: "Nuvens (%)", key: "cloud_cover", unit: "%" },
+    { label: "Nuvens Baixas (%)", key: "cloud_cover_low", unit: "%" },
     { label: "Temp. Aparente (°C)", key: "apparent_temperature", unit: "°C" },
     { label: "Prob. Precipitação (%)", key: "precipitation_probability", unit: "%" },
     { label: "Precipitação (mm)", key: "precipitation", unit: "mm" },
     { label: "Pancadas (mm)", key: "showers", unit: "mm" },
-    { label: "Tempo", key: "weather_code", unit: "" }, // Alterado para "Tempo"
-    { label: "Nuvens (%)", key: "cloud_cover", unit: "%" },
-    { label: "Nuvens Baixas (%)", key: "cloud_cover_low", unit: "%" },
     { label: "Vento 80m (km/h)", key: "wind_speed_80m", unit: "km/h" },
     { label: "Dir. Vento 80m (°)", key: "wind_direction_80m", unit: "°" },
 ];
@@ -35,6 +35,7 @@ const PARAMS =
     "hourly=visibility,apparent_temperature,precipitation_probability,precipitation,showers,weather_code,cloud_cover,cloud_cover_low,wind_speed_80m,wind_direction_80m" +
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
+// Adicionando TODOS códigos novos conforme solicitado (descrições em português)
 const WEATHER_CODE_PT = {
     "0": "Tempo bom",
     "1": "Nuvens dissipando",
@@ -55,7 +56,87 @@ const WEATHER_CODE_PT = {
     "16": "Precipitação à vista, atingindo solo/mar, próxima mas não na estação",
     "17": "Trovoada sem precipitação no momento",
     "18": "Rajadas (squalls)",
-    "19": "CB (Cumulonimbus)"
+    "19": "CB (Cumulonimbus)",
+    "20": "Chuvisco (não congelante) ou grãos de neve",
+    "21": "Chuva (não congelante)",
+    "22": "Neve",
+    "23": "Chuva e neve ou granizo",
+    "24": "Chuvisco congelante ou chuva congelante",
+    "25": "Pancadas de chuva",
+    "26": "Pancadas de neve, ou de chuva e neve",
+    "27": "Pancadas de granizo*, ou de chuva e granizo*",
+    "28": "Nevoeiro ou nevoeiro de gelo",
+    "29": "Trovoada (com ou sem precipitação)",
+    "30": "Tempestade de poeira ou areia, leve ou moderada",
+    "31": "Tempestade de poeira ou areia, leve ou moderada",
+    "32": "Tempestade de poeira ou areia, leve ou moderada",
+    "33": "Tempestade de poeira ou areia severa",
+    "34": "Tempestade de poeira ou areia severa",
+    "35": "Tempestade de poeira ou areia severa",
+    "36": "Neve soprada leve ou moderada",
+    "37": "Neve soprada forte",
+    "38": "Neve soprada leve ou moderada",
+    "39": "Neve soprada forte",
+    "40": "Nevoeiro ou nevoeiro de gelo à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
+    "41": "Nevoeiro ou nevoeiro de gelo em manchas",
+    "42": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "43": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "44": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "45": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "46": "Nevoeiro ou nevoeiro de gelo, céu visível",
+    "47": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "48": "Nevoeiro, depositando escarcha, céu visível",
+    "49": "Nevoeiro, depositando escarcha, céu invisível",
+    "50": "Chuvisco, não congelante, intermitente",
+    "51": "Chuvisco, não congelante, contínuo",
+    "52": "Chuvisco, não congelante, intermitente",
+    "53": "Chuvisco, não congelante, contínuo",
+    "54": "Chuvisco, não congelante, intermitente",
+    "55": "Chuvisco, não congelante, contínuo",
+    "56": "Chuvisco, congelante, fraco",
+    "57": "Chuvisco, congelante, moderado ou forte (denso)",
+    "58": "Chuvisco e chuva, fraco",
+    "59": "Chuvisco e chuva, moderado ou forte",
+    "60": "Chuva, não congelante, intermitente",
+    "61": "Chuva, não congelante, contínua",
+    "62": "Chuva, não congelante, intermitente",
+    "63": "Chuva, não congelante, contínua",
+    "64": "Chuva, não congelante, intermitente",
+    "65": "Chuva, não congelante, contínua",
+    "66": "Chuva, congelante, fraca",
+    "67": "Chuva, congelante, moderada ou forte (densa)",
+    "68": "Chuva ou chuvisco e neve, fraca",
+    "69": "Chuva ou chuvisco e neve, moderada ou forte",
+    "70": "Queda intermitente de flocos de neve",
+    "71": "Queda contínua de flocos de neve",
+    "72": "Queda intermitente de flocos de neve",
+    "73": "Queda contínua de flocos de neve",
+    "74": "Queda intermitente de flocos de neve",
+    "75": "Queda contínua de flocos de neve",
+    "76": "Pó de diamante (com ou sem nevoeiro)",
+    "77": "Grãos de neve (com ou sem nevoeiro)",
+    "78": "Cristais de neve isolados em forma de estrela (com ou sem nevoeiro)",
+    "79": "Granizo",
+    "80": "Pancadas de chuva, fraca",
+    "81": "Pancadas de chuva, moderada ou forte",
+    "82": "Pancadas de chuva, violenta",
+    "83": "Pancadas de chuva e neve misturados, fraca",
+    "84": "Pancadas de chuva e neve misturados, moderada ou forte",
+    "85": "Pancadas de neve, fraca",
+    "86": "Pancadas de neve, moderada ou forte",
+    "87": "Pancadas de grãos de neve ou granizo pequeno, com ou sem chuva ou chuva e neve misturados",
+    "88": "Pancadas de grãos de neve ou granizo pequeno, com ou sem chuva ou chuva e neve misturados",
+    "89": "Pancadas de granizo*, com ou sem chuva ou chuva e neve misturados, não associado a trovoada",
+    "90": "Pancadas de granizo*, com ou sem chuva ou chuva e neve misturados, não associado a trovoada",
+    "91": "Chuva fraca no momento da observação",
+    "92": "Chuva moderada ou forte no momento da observação",
+    "93": "Neve fraca, ou chuva e neve misturados ou granizo** no momento da observação",
+    "94": "Neve moderada ou forte, ou chuva e neve misturados ou granizo** no momento da observação",
+    "95": "Trovoada, fraca ou moderada, sem granizo**, mas com chuva e/ou neve no momento da observação",
+    "96": "Trovoada, fraca ou moderada, com granizo** no momento da observação",
+    "97": "Trovoada, forte, sem granizo**, mas com chuva e/ou neve no momento da observação",
+    "98": "Trovoada combinada com tempestade de poeira ou areia no momento da observação",
+    "99": "Trovoada, forte, com granizo** no momento da observação"
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -96,19 +177,18 @@ function makeTableSection(data, locationName) {
     const times = data.hourly.time;
     const now = getNowLocalString();
 
+    // Só mostra linhas onde Hora >= hora atual (nunca mostrar linhas para trás)
     for (let i = 0; i < times.length; i++) {
         const currTime = times[i].replace("T", " ");
-        // Só mostra linhas onde Hora >= hora atual
         if (currTime < now) continue;
 
         const row = document.createElement("tr");
-        row.innerHTML = FIELDS.map((f, idx) => {
+        row.innerHTML = FIELDS.map((f) => {
             let value, style = "";
 
             if (f.key === "time") {
                 value = currTime;
             } else if (f.key === "weather_code") {
-                // Convert to texto em português
                 let code = data.hourly["weather_code"][i];
                 value = WEATHER_CODE_PT.hasOwnProperty(code)
                     ? WEATHER_CODE_PT[code]
@@ -120,10 +200,7 @@ function makeTableSection(data, locationName) {
             }
 
             // Regras de cor de fundo
-            if (f.key === "visibility" && isNumeric(value)) {
-                if (value > 399 && value < 801) style = 'background: #fff6bf;';
-                else if (value < 400) style = 'background: #ffeaea;';
-            } else if (f.key === "precipitation" && isNumeric(value)) {
+            if (f.key === "precipitation" && isNumeric(value)) {
                 if (value > 1 && value < 10) style = 'background: #fff6bf;';
                 else if (value > 9) style = 'background: #ffeaea;';
             } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
