@@ -35,8 +35,6 @@ const PARAMS =
     "hourly=visibility,apparent_temperature,precipitation_probability,precipitation,showers,weather_code,cloud_cover,cloud_cover_low,wind_speed_80m,wind_direction_80m" +
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
-// WEATHER_CODE_PT completo omitido aqui para brevidade, mas use a versão da resposta anterior
-
 const WEATHER_CODE_PT = {
     "0": "Tempo bom",
     "1": "Nuvens dissipando",
@@ -182,6 +180,21 @@ function makeTableSection(data, locationName) {
     let firstIdx = times.findIndex(t => t.replace("T", " ") >= now);
     if (firstIdx === -1) firstIdx = times.length; // Se não achar, não mostra linhas
 
+    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 4 em diante)
+    for (let i = firstIdx + 4; i < times.length; i++) {
+        const currTime = times[i].replace("T", " ");
+        const row = document.createElement("tr");
+        row.innerHTML = FIELDS.map((f) => {
+            let value, style = "";
+
+            if (f.key === "time") {
+                value = currTime;
+            } else if (f.key === "weather_code") {
+                let code = data.hourly["weather_code"][i];
+                value = WEATHER_CODE_PT.hasOwnProperty(code)
+                    ? WEATHER_CODE_PT[code]
+                    : code;
+
                 // Fundo vermelho se código NÃO for 0, 1 ou 2
                 if (!(code === 0 || code === 1 || code === 2 || code === "0" || code === "1" || code === "2")) {
                     style = 'background: #ffc1c1;'; // vermelho claro
@@ -221,7 +234,7 @@ function makeTableSection(data, locationName) {
 // Obter hora local (America/Sao_Paulo) no formato 'YYYY-MM-DD HH:MM'
 function getNowLocalString() {
     const now = new Date();
-    let spNow = new Date(now.getTime() - (now.getTimezoneOffset() + 480) * 60000);
+    let spNow = new Date(now.getTime() - (now.getTimezoneOffset() + 180) * 60000);
     const yyyy = spNow.getFullYear();
     const mm = String(spNow.getMonth() + 1).padStart(2, '0');
     const dd = String(spNow.getDate()).padStart(2, '0');
