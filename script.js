@@ -76,31 +76,31 @@ const WEATHER_CODE_PT = {
     "37": "Neve soprada forte",
     "38": "Neve soprada leve ou moderada",
     "39": "Neve soprada forte",
-    "40": "Nevoeiro ou nevoeiro de gelo à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
-    "41": "Nevoeiro ou nevoeiro de gelo em manchas",
-    "42": "Nevoeiro ou nevoeiro de gelo, céu visível",
-    "43": "Nevoeiro ou nevoeiro de gelo, céu invisível",
-    "44": "Nevoeiro ou nevoeiro de gelo, céu visível",
-    "45": "Nevoeiro ou nevoeiro de gelo, céu invisível",
-    "46": "Nevoeiro ou nevoeiro de gelo, céu visível",
-    "47": "Nevoeiro ou nevoeiro de gelo, céu invisível",
+    "40": "Nevoeiro à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
+    "41": "Nevoeiro em manchas",
+    "42": "Nevoeiro, céu visível",
+    "43": "Nevoeiro, céu invisível",
+    "44": "Nevoeiro, céu visível",
+    "45": "Nevoeiro, céu invisível",
+    "46": "Nevoeiro, céu visível",
+    "47": "Nevoeiro, céu invisível",
     "48": "Nevoeiro, depositando escarcha, céu visível",
     "49": "Nevoeiro, depositando escarcha, céu invisível",
-    "50": "Chuvisco, não congelante, intermitente",
-    "51": "Chuvisco, não congelante, contínuo",
-    "52": "Chuvisco, não congelante, intermitente",
-    "53": "Chuvisco, não congelante, contínuo",
-    "54": "Chuvisco, não congelante, intermitente",
-    "55": "Chuvisco, não congelante, contínuo",
+    "50": "Chuvisco intermitente",
+    "51": "Chuvisco contínuo",
+    "52": "Chuvisco intermitente",
+    "53": "Chuvisco contínuo",
+    "54": "Chuvisco intermitente",
+    "55": "Chuvisco contínuo",
     "56": "Chuvisco, congelante, fraco",
     "57": "Chuvisco, congelante, moderado ou forte (denso)",
-    "58": "Chuvisco e chuva, fraco",
+    "58": "Chuvisco e chuva, fraca",
     "59": "Chuvisco e chuva, moderado ou forte",
-    "60": "Chuva, não congelante, intermitente",
-    "61": "Chuva, não congelante, contínua",
-    "62": "Chuva, não congelante, intermitente",
-    "63": "Chuva, não congelante, contínua",
-    "64": "Chuva, não congelante, intermitente",
+    "60": "Chuva intermitente",
+    "61": "Chuva contínua",
+    "62": "Chuva intermitente",
+    "63": "Chuva contínua",
+    "64": "Chuva intermitente",
     "65": "Chuva, não congelante, contínua",
     "66": "Chuva, congelante, fraca",
     "67": "Chuva, congelante, moderada ou forte (densa)",
@@ -180,8 +180,8 @@ function makeTableSection(data, locationName) {
     let firstIdx = times.findIndex(t => t.replace("T", " ") >= now);
     if (firstIdx === -1) firstIdx = times.length; // Se não achar, não mostra linhas
 
-    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 4 em diante)
-    for (let i = firstIdx + 4; i < times.length; i++) {
+    // Começar a mostrar a partir da quinta linha futura (ou seja, da posição firstIdx + 5 em diante)
+    for (let i = firstIdx + 5; i < times.length; i++) {
         const currTime = times[i].replace("T", " ");
         const row = document.createElement("tr");
         row.innerHTML = FIELDS.map((f) => {
