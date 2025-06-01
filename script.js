@@ -36,9 +36,9 @@ const PARAMS =
     "&models=gfs_seamless&timezone=America%2FSao_Paulo&forecast_hours=24&past_hours=24";
 
 const WEATHER_CODE_PT = {
-    "0": "Desenvolvimento de nuvens não observado",
+    "0": "Tempo bom",
     "1": "Nuvens dissipando",
-    "2": "Estado do céu inalterado",
+    "2": "Tempo inalterado",
     "3": "Nuvens se formando",
     "4": "Visibilidade reduzida por fumaça (incêndios, fumaça industrial ou cinzas vulcânicas)",
     "5": "Neblina seca (haze)",
@@ -47,8 +47,8 @@ const WEATHER_CODE_PT = {
     "8": "Turbilhão de poeira/areia bem desenvolvido observado, mas sem tempestade de poeira/areia",
     "9": "Tempestade de poeira ou areia à vista ou ocorrida na última hora",
     "10": "Névoa",
-    "11": "Pedaços/fragmentos",
-    "12": "Mais ou menos contínuo",
+    "11": "Nevoeiro em Pedaços/fragmentos",
+    "12": "Nevoeiro contínuo",
     "13": "Relâmpago visível, sem trovão ouvido",
     "14": "Precipitação à vista, não atingindo o solo/mar",
     "15": "Precipitação à vista, atingindo solo/mar, mas distante (>5km)",
