@@ -16,7 +16,7 @@ const LOCATIONS = [
     }
 ];
 
-const FIELDS = [
+const FIELDS_COMMON = [
     { label: "Hora", key: "time", unit: "" },
     { label: "Tempo", key: "weather_code", unit: "" },
     { label: "Nuvens (%)", key: "cloud_cover", unit: "%" },
@@ -25,8 +25,8 @@ const FIELDS = [
     { label: "Prob. Precipitação (%)", key: "precipitation_probability", unit: "%" },
     { label: "Precipitação (mm)", key: "precipitation", unit: "mm" },
     { label: "Pancadas (mm)", key: "showers", unit: "mm" },
-    { label: "Vento 80m (km/h)", key: "wind_speed_80m", unit: "km/h" },
-    { label: "Dir. Vento 80m (°)", key: "wind_direction_80m", unit: "°" },
+    { label: "Vento 80m (km/h)", key: "wind_speed_80m", unit: "km/h" }
+    // Última coluna será tratada de forma customizada por location
 ];
 
 const BASE_URL = "https://api.open-meteo.com/v1/forecast";
@@ -76,7 +76,7 @@ const WEATHER_CODE_PT = {
     "37": "Neve soprada forte",
     "38": "Neve soprada leve ou moderada",
     "39": "Neve soprada forte",
-    "40": "Nevoeiro ou nevoeiro de gelo à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do observador",
+    "40": "Nevoeiro ou nevoeiro de gelo à distância no momento da observação, mas não na estação durante a hora precedente, o nevoeiro ou nevoeiro de gelo estendendo-se até um nível acima do solo",
     "41": "Nevoeiro",
     "42": "Nevoeiro",
     "43": "Nevoeiro",
@@ -165,10 +165,24 @@ function makeTableSection(data, locationName) {
     section.className = "table-section";
     section.innerHTML = `<h2>${locationName}</h2>`;
 
-    const table = document.createElement("table");
+    // Monta as colunas de acordo com location
+    let fields;
+    if (locationName === "GRU") {
+        fields = [
+            ...FIELDS_COMMON,
+            { label: "Pista Prevista para Pouso", key: "runway_prediction", unit: "" }
+        ];
+    } else {
+        fields = [
+            ...FIELDS_COMMON,
+            { label: "Dir. Vento 80m (°)", key: "wind_direction_80m", unit: "°" }
+        ];
+    }
+
     // Cabeçalho
+    const table = document.createElement("table");
     const thead = document.createElement("thead");
-    thead.innerHTML = `<tr>${FIELDS.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
+    thead.innerHTML = `<tr>${fields.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
     table.appendChild(thead);
 
     // Linhas
@@ -184,7 +198,7 @@ function makeTableSection(data, locationName) {
     for (let i = firstIdx + 5; i < times.length; i++) {
         const currTime = times[i].replace("T", " ");
         const row = document.createElement("tr");
-        row.innerHTML = FIELDS.map((f) => {
+        row.innerHTML = fields.map((f) => {
             let value, style = "";
 
             if (f.key === "time") {
@@ -198,9 +212,26 @@ function makeTableSection(data, locationName) {
                 // Fundo de acordo com código:
                 // 0, 1, 2: normal; 3: amarelo; outros: vermelho
                 if (code === 3 || code === "3") {
-                    style = 'background: #fff6bf;'; // amarelo
+                    style = 'background: #fff6bf;';
                 } else if (!(code === 0 || code === 1 || code === 2 || code === "0" || code === "1" || code === "2")) {
-                    style = 'background: #ffc1c1;'; // vermelho claro
+                    style = 'background: #ffc1c1;';
+                }
+            } else if (f.key === "runway_prediction") {
+                // Só para GRU
+                let windDir = data.hourly["wind_direction_80m"][i];
+                let windSpd = data.hourly["wind_speed_80m"][i];
+
+                // Garantia de tipo numérico
+                windDir = Number(windDir);
+                windSpd = Number(windSpd);
+
+                // Regra:
+                // "10R" quando Dir. Vento 80m (°) entre 010 e 190 (inclusive) OU Vento 80m (km/h) < 7
+                // Senão "28L"
+                if ((windDir >= 10 && windDir <= 190) || windSpd < 7) {
+                    value = "10R";
+                } else {
+                    value = "28L";
                 }
             } else if (Array.isArray(data.hourly[f.key])) {
                 value = data.hourly[f.key][i];
@@ -208,8 +239,8 @@ function makeTableSection(data, locationName) {
                 value = "-";
             }
 
-            // Outras regras de cor de fundo (menos para weather_code)
-            if (f.key !== "weather_code") {
+            // Outras regras de cor de fundo (menos para weather_code/runway_prediction)
+            if (f.key !== "weather_code" && f.key !== "runway_prediction") {
                 if (f.key === "precipitation" && isNumeric(value)) {
                     if (value > 1 && value < 10) style = 'background: #fff6bf;';
                     else if (value > 9) style = 'background: #ffeaea;';
