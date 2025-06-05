@@ -239,19 +239,21 @@ function makeTableSection(data, locationName) {
                 value = "-";
             }
 
-            // Outras regras de cor de fundo (menos para weather_code/runway_prediction)
-            if (f.key !== "weather_code" && f.key !== "runway_prediction") {
-                if (f.key === "precipitation" && isNumeric(value)) {
-                    if (value > 1 && value < 10) style = 'background: #fff6bf;';
-                    else if (value > 9) style = 'background: #ffeaea;';
-                } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
-                    if (value > 49 && value < 80) style = 'background: #fff6bf;';
-                    else if (value > 79) style = 'background: #ffeaea;';
-                } else if (f.key === "wind_speed_80m" && isNumeric(value)) {
-                    if (value > 19 && value < 30) style = 'background: #fff6bf;';
-                    else if (value > 29) style = 'background: #ffeaea;';
+                // Outras regras de cor de fundo (menos para weather_code/runway_prediction)
+                if (f.key !== "weather_code" && f.key !== "runway_prediction") {
+                    if (f.key === "showers" && isNumeric(value)) {
+                        if (value > 0) style = 'background: #ffeaea;';
+                    } else if (f.key === "precipitation" && isNumeric(value)) {
+                        if (value > 1 && value < 10) style = 'background: #fff6bf;';
+                        else if (value > 9) style = 'background: #ffeaea;';
+                    } else if (f.key === "cloud_cover_low" && isNumeric(value)) {
+                        if (value > 49 && value < 80) style = 'background: #fff6bf;';
+                        else if (value > 79) style = 'background: #ffeaea;';
+                    } else if (f.key === "wind_speed_80m" && isNumeric(value)) {
+                        if (value > 19 && value < 30) style = 'background: #fff6bf;';
+                        else if (value > 29) style = 'background: #ffeaea;';
+                    }
                 }
-            }
 
             // Unidades
             let unidade = (value !== "-" && f.unit) ? ` ${f.unit}` : "";
