@@ -170,7 +170,7 @@ function makeTableSection(data, locationName) {
     if (locationName === "GRU") {
         fields = [
             ...FIELDS_COMMON,
-            { label: "Pista Prevista para Pouso", key: "runway_prediction", unit: "" }
+            { label: "Operação de Pista", key: "runway_prediction", unit: "" }
         ];
     } else {
         fields = [
